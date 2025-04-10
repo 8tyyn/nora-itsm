@@ -10,7 +10,7 @@ import { Users, Calendar, DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-4'>
       <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
       <Tabs defaultValue='overview' className='space-y-4'>
         <TabsList>
@@ -20,12 +20,12 @@ export default function DashboardPage() {
         </TabsList>
         <TabsContent value='overview' className='space-y-4'>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-            <Card className=''>
+            <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>
                   Total Users
                 </CardTitle>
-                <Users className='text-primary h-4 w-4' />
+                <Users className='h-4 w-4 text-blue-600' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>1,248</div>
@@ -39,7 +39,7 @@ export default function DashboardPage() {
                 <CardTitle className='text-sm font-medium'>
                   Active Doctors
                 </CardTitle>
-                <Users className='text-primary h-4 w-4' />
+                <Users className='h-4 w-4 text-blue-600' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>324</div>
@@ -53,7 +53,7 @@ export default function DashboardPage() {
                 <CardTitle className='text-sm font-medium'>
                   Appointments
                 </CardTitle>
-                <Calendar className='text-primary h-4 w-4' />
+                <Calendar className='h-4 w-4 text-blue-600' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>573</div>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Revenue</CardTitle>
-                <DollarSign className='text-primary h-4 w-4' />
+                <DollarSign className='h-4 w-4 text-blue-600' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>$45,231.89</div>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className='pl-2'>
-                <div className='bg-muted/50 flex h-[400px] items-center justify-center rounded-md border'>
+                <div className='flex h-[400px] items-center justify-center rounded-md border bg-slate-50'>
                   <p className='text-muted-foreground'>
                     PowerBI Embed would go here
                   </p>
@@ -100,8 +100,8 @@ export default function DashboardPage() {
                 <div className='space-y-4'>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <div key={i} className='flex items-center gap-4'>
-                      <div className='bg-primary/10 rounded-full p-2'>
-                        <div className='bg-primary h-2 w-2 rounded-full' />
+                      <div className='rounded-full bg-blue-100 p-2'>
+                        <div className='h-2 w-2 rounded-full bg-blue-600' />
                       </div>
                       <div className='flex-1 space-y-1'>
                         <p className='text-sm leading-none font-medium'>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
               <CardDescription>Detailed analytics from PowerBI</CardDescription>
             </CardHeader>
             <CardContent className='pl-2'>
-              <div className='bg-muted/50 flex h-[600px] items-center justify-center rounded-md border'>
+              <div className='flex h-[600px] items-center justify-center rounded-md border bg-slate-50'>
                 <p className='text-muted-foreground'>
                   PowerBI Analytics would go here
                 </p>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
               <CardDescription>Generated reports and exports</CardDescription>
             </CardHeader>
             <CardContent className='pl-2'>
-              <div className='bg-muted/50 flex h-[600px] items-center justify-center rounded-md border'>
+              <div className='flex h-[600px] items-center justify-center rounded-md border bg-slate-50'>
                 <p className='text-muted-foreground'>
                   PowerBI Reports would go here
                 </p>

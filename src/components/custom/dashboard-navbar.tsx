@@ -24,7 +24,7 @@ interface DashboardNavbarProps {
 
 export function DashboardNavbar({ user, onMenuClick }: DashboardNavbarProps) {
   return (
-    <header className='bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px]'>
+    <header className='sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px]'>
       <Button
         variant='ghost'
         size='icon'
@@ -37,7 +37,7 @@ export function DashboardNavbar({ user, onMenuClick }: DashboardNavbarProps) {
       <div className='ml-auto flex items-center gap-4'>
         <div className='hidden text-sm font-medium md:block'>
           <span className='mr-2'>{user.name}</span>
-          <span className='bg-primary/10 text-primary rounded-full px-2 py-1 text-xs'>
+          <span className='rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700'>
             {user.type}
           </span>
         </div>
@@ -46,7 +46,7 @@ export function DashboardNavbar({ user, onMenuClick }: DashboardNavbarProps) {
             <Button variant='ghost' size='icon' className='rounded-full'>
               <Avatar className='h-8 w-8'>
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className='bg-primary/10 text-primary'>
+                <AvatarFallback className='bg-blue-100 text-blue-700'>
                   {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>

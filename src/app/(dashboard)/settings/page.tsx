@@ -59,7 +59,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Changes</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Save Changes
+              </Button>
             </CardFooter>
           </Card>
 
@@ -85,7 +87,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Change Password</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Change Password
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -102,7 +106,10 @@ export default function SettingsPage() {
               <div className='space-y-2'>
                 <Label htmlFor='theme'>Theme</Label>
                 <Select defaultValue='system'>
-                  <SelectTrigger id='theme'>
+                  <SelectTrigger
+                    id='theme'
+                    className='border-blue-200 focus:ring-blue-500'
+                  >
                     <SelectValue placeholder='Select theme' />
                   </SelectTrigger>
                   <SelectContent>
@@ -134,7 +141,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Preferences</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Save Preferences
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -195,7 +204,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Notification Settings</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Save Notification Settings
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -214,6 +225,7 @@ export default function SettingsPage() {
                 <Input
                   id='powerbi-workspace'
                   placeholder='Enter your PowerBI workspace ID'
+                  className='border-blue-200 focus:ring-blue-500'
                 />
               </div>
               <div className='space-y-2'>
@@ -222,6 +234,7 @@ export default function SettingsPage() {
                   id='powerbi-api-key'
                   type='password'
                   placeholder='Enter your PowerBI API key'
+                  className='border-blue-200 focus:ring-blue-500'
                 />
               </div>
               <div className='space-y-2'>
@@ -229,7 +242,10 @@ export default function SettingsPage() {
                   Data Refresh Interval
                 </Label>
                 <Select defaultValue='30'>
-                  <SelectTrigger id='powerbi-refresh-interval'>
+                  <SelectTrigger
+                    id='powerbi-refresh-interval'
+                    className='border-blue-200 focus:ring-blue-500'
+                  >
                     <SelectValue placeholder='Select refresh interval' />
                   </SelectTrigger>
                   <SelectContent>
@@ -252,7 +268,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save PowerBI Settings</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Save PowerBI Settings
+              </Button>
             </CardFooter>
           </Card>
 
@@ -307,7 +325,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Update Report Settings</Button>
+              <Button className='bg-blue-600 hover:bg-blue-700'>
+                Update Report Settings
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>

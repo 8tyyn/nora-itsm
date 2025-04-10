@@ -62,7 +62,7 @@ export default function UsersPage() {
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold tracking-tight'>Users</h1>
-        <Button>Add User</Button>
+        <Button className='bg-blue-600 hover:bg-blue-700'>Add User</Button>
       </div>
       <Card>
         <CardHeader>
@@ -71,7 +71,12 @@ export default function UsersPage() {
         <CardContent>
           <div className='mb-4 flex items-center gap-4'>
             <Input placeholder='Search users...' className='max-w-sm' />
-            <Button variant='outline'>Filter</Button>
+            <Button
+              variant='outline'
+              className='border-blue-200 text-blue-700 hover:bg-blue-50'
+            >
+              Filter
+            </Button>
           </div>
           <Table>
             <TableHeader>
@@ -93,7 +98,7 @@ export default function UsersPage() {
                           src={`/placeholder.svg?height=32&width=32`}
                           alt={user.name}
                         />
-                        <AvatarFallback className='bg-primary/10 text-primary'>
+                        <AvatarFallback className='bg-blue-100 text-blue-700'>
                           {user.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
@@ -108,8 +113,8 @@ export default function UsersPage() {
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={
-                        user.status === 'Active' ? 'default' : 'secondary'
+                      className={
+                        user.status === 'Active' ? 'bg-green-600' : 'bg-red-500'
                       }
                     >
                       {user.status}
@@ -117,7 +122,12 @@ export default function UsersPage() {
                   </TableCell>
                   <TableCell>{user.lastActive}</TableCell>
                   <TableCell className='text-right'>
-                    <Button variant='ghost' size='sm' asChild>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      asChild
+                      className='text-blue-600 hover:bg-blue-50 hover:text-blue-700'
+                    >
                       <Link href={`/users/${user.id}`}>View</Link>
                     </Button>
                   </TableCell>

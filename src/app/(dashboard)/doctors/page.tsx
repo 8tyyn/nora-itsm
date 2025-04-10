@@ -61,7 +61,7 @@ export default function DoctorsPage() {
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold tracking-tight'>Doctors</h1>
-        <Button>Add Doctor</Button>
+        <Button className='bg-blue-600 hover:bg-blue-700'>Add Doctor</Button>
       </div>
       <Card>
         <CardHeader>
@@ -70,7 +70,12 @@ export default function DoctorsPage() {
         <CardContent>
           <div className='mb-4 flex items-center gap-4'>
             <Input placeholder='Search doctors...' className='max-w-sm' />
-            <Button variant='outline'>Filter</Button>
+            <Button
+              variant='outline'
+              className='border-blue-200 text-blue-700 hover:bg-blue-50'
+            >
+              Filter
+            </Button>
           </div>
           <Table>
             <TableHeader>
@@ -92,7 +97,7 @@ export default function DoctorsPage() {
                           src={`/placeholder.svg?height=32&width=32`}
                           alt={doctor.name}
                         />
-                        <AvatarFallback className='bg-primary/10 text-primary'>
+                        <AvatarFallback className='bg-blue-100 text-blue-700'>
                           {doctor.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
@@ -107,12 +112,12 @@ export default function DoctorsPage() {
                   <TableCell>{doctor.specialty}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={
+                      className={
                         doctor.status === 'Available'
-                          ? 'default'
+                          ? 'bg-green-600'
                           : doctor.status === 'On Leave'
-                            ? 'secondary'
-                            : 'outline'
+                            ? 'bg-red-500'
+                            : 'bg-amber-500'
                       }
                     >
                       {doctor.status}
@@ -120,7 +125,11 @@ export default function DoctorsPage() {
                   </TableCell>
                   <TableCell>{doctor.patients}</TableCell>
                   <TableCell className='text-right'>
-                    <Button variant='ghost' size='sm'>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      className='text-blue-600 hover:bg-blue-50 hover:text-blue-700'
+                    >
                       View
                     </Button>
                   </TableCell>

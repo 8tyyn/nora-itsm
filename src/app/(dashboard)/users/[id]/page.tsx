@@ -21,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 // Mock user data - in a real app, this would come from a database
-const users: any = {
+const users = {
   '1': {
     id: '1',
     name: 'Alice Johnson',
@@ -105,9 +105,14 @@ export default function UserPage({ params }: { params: { id: string } }) {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2'>
-        <Button variant='ghost' size='icon' asChild>
+        <Button
+          variant='ghost'
+          size='icon'
+          asChild
+          className='hover:bg-blue-50'
+        >
           <Link href='/users'>
-            <ArrowLeft className='h-4 w-4' />
+            <ArrowLeft className='h-4 w-4 text-blue-600' />
             <span className='sr-only'>Back to users</span>
           </Link>
         </Button>
@@ -123,36 +128,36 @@ export default function UserPage({ params }: { params: { id: string } }) {
                   src={`/placeholder.svg?height=96&width=96`}
                   alt={user.name}
                 />
-                <AvatarFallback className='bg-primary/10 text-primary text-2xl'>
+                <AvatarFallback className='bg-blue-100 text-2xl text-blue-700'>
                   {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className='flex flex-col items-center'>
                 <h2 className='text-xl font-bold'>{user.name}</h2>
-                <Badge className='mt-1'>{user.role}</Badge>
+                <Badge className='mt-1 bg-blue-600'>{user.role}</Badge>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
               <div className='flex items-center gap-2'>
-                <Mail className='text-primary h-4 w-4' />
+                <Mail className='h-4 w-4 text-blue-600' />
                 <span>{user.email}</span>
               </div>
               <div className='flex items-center gap-2'>
-                <Phone className='text-primary h-4 w-4' />
+                <Phone className='h-4 w-4 text-blue-600' />
                 <span>{user.phone}</span>
               </div>
               <div className='flex items-start gap-2'>
-                <MapPin className='text-primary mt-0.5 h-4 w-4' />
+                <MapPin className='mt-0.5 h-4 w-4 text-blue-600' />
                 <span>{user.address}</span>
               </div>
               <div className='flex items-center gap-2'>
-                <Calendar className='text-primary h-4 w-4' />
+                <Calendar className='h-4 w-4 text-blue-600' />
                 <span>Joined {user.dateJoined}</span>
               </div>
               <div className='flex items-center gap-2'>
-                <Activity className='text-primary h-4 w-4' />
+                <Activity className='h-4 w-4 text-blue-600' />
                 <span>Last active {user.lastActive}</span>
               </div>
             </div>
@@ -266,7 +271,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent>
                     <div className='space-y-4'>
-                      {user.appointments?.map((appointment: any) => (
+                      {user.appointments?.map((appointment) => (
                         <div
                           key={appointment.id}
                           className='flex items-center justify-between border-b pb-4 last:border-0 last:pb-0'
@@ -282,6 +287,11 @@ export default function UserPage({ params }: { params: { id: string } }) {
                               appointment.status === 'Completed'
                                 ? 'outline'
                                 : 'secondary'
+                            }
+                            className={
+                              appointment.status === 'Completed'
+                                ? 'border-blue-300 text-blue-700'
+                                : ''
                             }
                           >
                             {appointment.status}
@@ -303,7 +313,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent>
                     <div className='space-y-4'>
-                      {user.medicalRecords?.map((record: any) => (
+                      {user.medicalRecords?.map((record) => (
                         <div
                           key={record.id}
                           className='border-b pb-4 last:border-0 last:pb-0'
@@ -312,7 +322,11 @@ export default function UserPage({ params }: { params: { id: string } }) {
                             <p className='font-medium'>
                               {record.date} - {record.type}
                             </p>
-                            <Button variant='outline' size='sm'>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              className='border-blue-200 text-blue-700 hover:bg-blue-50'
+                            >
                               View Details
                             </Button>
                           </div>
@@ -336,17 +350,20 @@ export default function UserPage({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent>
                     <div className='space-y-4'>
-                      {user.permissions?.map(
-                        (permission: any, index: number) => (
-                          <div
-                            key={index}
-                            className='flex items-center justify-between border-b pb-4 last:border-0 last:pb-0'
+                      {user.permissions?.map((permission, index) => (
+                        <div
+                          key={index}
+                          className='flex items-center justify-between border-b pb-4 last:border-0 last:pb-0'
+                        >
+                          <p className='text-sm'>{permission}</p>
+                          <Badge
+                            variant='outline'
+                            className='border-blue-300 text-blue-700'
                           >
-                            <p className='text-sm'>{permission}</p>
-                            <Badge variant='outline'>Granted</Badge>
-                          </div>
-                        )
-                      )}
+                            Granted
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -363,8 +380,8 @@ export default function UserPage({ params }: { params: { id: string } }) {
                   <CardContent>
                     <div className='space-y-4'>
                       <div className='flex items-center gap-4'>
-                        <div className='bg-primary/10 rounded-full p-2'>
-                          <div className='bg-primary h-2 w-2 rounded-full' />
+                        <div className='rounded-full bg-blue-100 p-2'>
+                          <div className='h-2 w-2 rounded-full bg-blue-600' />
                         </div>
                         <div className='flex-1 space-y-1'>
                           <p className='text-sm leading-none font-medium'>
@@ -376,8 +393,8 @@ export default function UserPage({ params }: { params: { id: string } }) {
                         </div>
                       </div>
                       <div className='flex items-center gap-4'>
-                        <div className='bg-primary/10 rounded-full p-2'>
-                          <div className='bg-primary h-2 w-2 rounded-full' />
+                        <div className='rounded-full bg-blue-100 p-2'>
+                          <div className='h-2 w-2 rounded-full bg-blue-600' />
                         </div>
                         <div className='flex-1 space-y-1'>
                           <p className='text-sm leading-none font-medium'>
@@ -389,8 +406,8 @@ export default function UserPage({ params }: { params: { id: string } }) {
                         </div>
                       </div>
                       <div className='flex items-center gap-4'>
-                        <div className='bg-primary/10 rounded-full p-2'>
-                          <div className='bg-primary h-2 w-2 rounded-full' />
+                        <div className='rounded-full bg-blue-100 p-2'>
+                          <div className='h-2 w-2 rounded-full bg-blue-600' />
                         </div>
                         <div className='flex-1 space-y-1'>
                           <p className='text-sm leading-none font-medium'>

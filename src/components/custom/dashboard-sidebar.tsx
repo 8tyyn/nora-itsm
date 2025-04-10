@@ -55,7 +55,7 @@ export function DashboardSidebar({
   return (
     <div
       className={cn(
-        'bg-sidebar text-sidebar-foreground fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r transition-transform lg:static lg:translate-x-0',
+        'fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-white transition-transform lg:static lg:translate-x-0',
         open ? 'translate-x-0' : '-translate-x-full'
       )}
     >
@@ -64,7 +64,7 @@ export function DashboardSidebar({
           href='/dashboard'
           className='flex items-center gap-2 font-semibold'
         >
-          <BarChart3 className='text-primary h-6 w-6' />
+          <BarChart3 className='h-6 w-6 text-blue-600' />
           <span>Healthcare Admin</span>
         </Link>
         <Button
@@ -89,16 +89,14 @@ export function DashboardSidebar({
                 }
               }}
               className={cn(
-                'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                route.active
-                  ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  : 'transparent'
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-blue-50',
+                route.active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
               )}
             >
               <route.icon
                 className={cn(
                   'h-4 w-4',
-                  route.active ? 'text-primary' : 'text-sidebar-foreground'
+                  route.active ? 'text-blue-600' : 'text-gray-500'
                 )}
               />
               {route.label}
