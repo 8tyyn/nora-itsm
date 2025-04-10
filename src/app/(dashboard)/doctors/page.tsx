@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 // Mock data for doctors
 const doctors = [
@@ -61,7 +62,9 @@ export default function DoctorsPage() {
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold tracking-tight'>Doctors</h1>
-        <Button className='bg-blue-600 hover:bg-blue-700'>Add Doctor</Button>
+        <Button className='bg-blue-600 hover:bg-blue-700' asChild>
+          <Link href='/doctors/add'>Add Doctor</Link>
+        </Button>
       </div>
       <Card>
         <CardHeader>
@@ -114,9 +117,9 @@ export default function DoctorsPage() {
                     <Badge
                       className={
                         doctor.status === 'Available'
-                          ? 'bg-green-600'
+                          ? 'bg-blue-600'
                           : doctor.status === 'On Leave'
-                            ? 'bg-red-500'
+                            ? 'bg-slate-500'
                             : 'bg-amber-500'
                       }
                     >

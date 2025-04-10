@@ -62,7 +62,9 @@ export default function UsersPage() {
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold tracking-tight'>Users</h1>
-        <Button className='bg-blue-600 hover:bg-blue-700'>Add User</Button>
+        <Button className='bg-blue-600 hover:bg-blue-700' asChild>
+          <Link href='/users/add'>Add User</Link>
+        </Button>
       </div>
       <Card>
         <CardHeader>
@@ -114,7 +116,9 @@ export default function UsersPage() {
                   <TableCell>
                     <Badge
                       className={
-                        user.status === 'Active' ? 'bg-green-600' : 'bg-red-500'
+                        user.status === 'Active'
+                          ? 'bg-blue-600'
+                          : 'bg-slate-500'
                       }
                     >
                       {user.status}
