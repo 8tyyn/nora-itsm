@@ -50,7 +50,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <Card>
+        <Card className='bg-blue-100'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>
               Total Patients
@@ -65,7 +65,7 @@ export default function AnalyticsPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-blue-100'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Appointments</CardTitle>
             <Calendar className='h-4 w-4 text-blue-600' />
@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-blue-100'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>
               Average Wait Time
@@ -93,7 +93,7 @@ export default function AnalyticsPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-blue-100'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Revenue</CardTitle>
             <DollarSign className='h-4 w-4 text-blue-600' />
@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
       </div>
 
       <Tabs defaultValue='overview' className='space-y-4'>
-        <TabsList>
+        <TabsList className='bg-blue-100'>
           <TabsTrigger value='overview'>Overview</TabsTrigger>
           <TabsTrigger value='patients'>Patient Analytics</TabsTrigger>
           <TabsTrigger value='appointments'>Appointment Analytics</TabsTrigger>

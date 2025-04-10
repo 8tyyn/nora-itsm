@@ -13,14 +13,14 @@ export default function DashboardPage() {
     <div className='flex flex-col gap-4'>
       <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
       <Tabs defaultValue='overview' className='space-y-4'>
-        <TabsList>
+        <TabsList className='bg-blue-100'>
           <TabsTrigger value='overview'>Overview</TabsTrigger>
           <TabsTrigger value='analytics'>Analytics</TabsTrigger>
           <TabsTrigger value='reports'>Reports</TabsTrigger>
         </TabsList>
         <TabsContent value='overview' className='space-y-4'>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-            <Card>
+            <Card className='bg-blue-100'>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>
                   Total Users
@@ -34,7 +34,7 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className='bg-blue-100'>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>
                   Active Doctors
@@ -48,7 +48,7 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className='bg-blue-100'>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>
                   Appointments
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className='bg-blue-100'>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                 <CardTitle className='text-sm font-medium'>Revenue</CardTitle>
                 <DollarSign className='h-4 w-4 text-blue-600' />
