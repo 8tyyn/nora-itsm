@@ -1,3 +1,6 @@
+'use client';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,55 +12,24 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { UserModel } from '@/models/UserModel';
+import { DoctorService } from '@/services/DoctorService';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 // Mock data for doctors
-const doctors = [
-  {
-    id: '1',
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@example.com',
-    specialty: 'Cardiology',
-    status: 'Available',
-    patients: 42
-  },
-  {
-    id: '2',
-    name: 'Dr. Michael Chen',
-    email: 'michael.chen@example.com',
-    specialty: 'Neurology',
-    status: 'In Appointment',
-    patients: 38
-  },
-  {
-    id: '3',
-    name: 'Dr. Emily Rodriguez',
-    email: 'emily.rodriguez@example.com',
-    specialty: 'Pediatrics',
-    status: 'Available',
-    patients: 65
-  },
-  {
-    id: '4',
-    name: 'Dr. James Wilson',
-    email: 'james.wilson@example.com',
-    specialty: 'Orthopedics',
-    status: 'On Leave',
-    patients: 27
-  },
-  {
-    id: '5',
-    name: 'Dr. Lisa Patel',
-    email: 'lisa.patel@example.com',
-    specialty: 'Dermatology',
-    status: 'Available',
-    patients: 51
-  }
-];
 
 export default function DoctorsPage() {
+  const getDoctors = async (token: string) => {
+    const data = await DoctorService.getAll(token);
+    setDoctors(data);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')!;
+    getDoctors(token);
+  }, []);
+  const [doctors, setDoctors] = useState<UserModel[]>([]);
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
@@ -84,41 +56,34 @@ export default function DoctorsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Doctor</TableHead>
-                <TableHead>Specialty</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Patients</TableHead>
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {doctors.map((doctor) => (
-                <TableRow key={doctor.id}>
+                <TableRow key={doctor._id}>
                   <TableCell>
                     <div className='flex items-center gap-3'>
                       <Avatar className='h-8 w-8'>
-                        <AvatarImage
-                          src={`/placeholder.svg?height=32&width=32`}
-                          alt={doctor.name}
-                        />
                         <AvatarFallback className='bg-blue-100 text-blue-700'>
-                          {doctor.name.charAt(0)}
+                          {doctor.fullName.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div className='flex flex-col'>
-                        <span className='font-medium'>{doctor.name}</span>
+                        <span className='font-medium'>{doctor.fullName}</span>
                         <span className='text-muted-foreground text-xs'>
                           {doctor.email}
                         </span>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{doctor.specialty}</TableCell>
                   <TableCell>
                     <Badge
                       className={
-                        doctor.status === 'Available'
+                        doctor.status === 'Active'
                           ? 'bg-blue-600'
-                          : doctor.status === 'On Leave'
+                          : doctor.status === 'Inactive'
                             ? 'bg-slate-500'
                             : 'bg-amber-500'
                       }
@@ -126,14 +91,13 @@ export default function DoctorsPage() {
                       {doctor.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{doctor.patients}</TableCell>
                   <TableCell className='text-right'>
                     <Button
                       variant='ghost'
                       size='sm'
                       className='text-blue-600 hover:bg-blue-50 hover:text-blue-700'
                     >
-                      View
+                      <Link href={`/doctors/${doctor._id}`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>

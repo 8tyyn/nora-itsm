@@ -29,6 +29,8 @@ import {
 } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UserService } from '@/services/UserService';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -53,17 +55,16 @@ export default function LoginPage() {
     }
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setError(null);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // For demo purposes, we'll just redirect to dashboard
-      // In a real app, you would validate credentials with your backend
+    const result = await UserService.login(values.email, values.password);
+    if (result != null) {
       router.push('/dashboard');
-    }, 1500);
+    } else {
+      toast.error('Cannot login , error occured');
+    }
+    setIsLoading(false);
   }
 
   return (

@@ -2,11 +2,28 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Users, Stethoscope, Settings, Home, X } from 'lucide-react';
-
+import {
+  BarChart3,
+  Users,
+  Stethoscope,
+  Settings,
+  Home,
+  X,
+  UserPlus,
+  ShieldCheck,
+  Ban,
+  User
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/services/AuthService';
+import { useEffect, useState } from 'react';
+import { UserModel } from '@/models/UserModel';
+import { UserService } from '@/services/UserService';
+import { AdminService } from '@/services/AdminService';
+import { DoctorService } from '@/services/DoctorService';
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -18,8 +35,49 @@ export function DashboardSidebar({
   onOpenChange
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const [pending, setPending] = useState<UserModel[]>([]);
+  const [blocked, setBlocked] = useState<UserModel[]>([]);
+  const [active, setActive] = useState<UserModel[]>([]);
+  const [doctor, setDoctor] = useState<UserModel[]>([]);
+  const [admin, setAdmin] = useState<UserModel[]>([]);
+  const [blockedadmins, setBlockedAdmin] = useState<UserModel[]>([]);
+  const [userRole, setUserRole] = useState<
+    'super_admin' | 'admin' | 'doctor' | 'user' | ''
+  >('');
 
-  const routes = [
+  // Fetch user data
+  const getUsers = async (token: string) => {
+    try {
+      const pendingData = await UserService.getAllPending(token);
+      const blockedData = await UserService.getAllBlocked(token);
+      const activeData = await UserService.getAllActive(token);
+      const doctorData = await DoctorService.getAll(token);
+      const adminData = await AdminService.getAll(token);
+      const blockedadminsData = await UserService.getBlockedAdmins(token);
+      setPending(pendingData);
+      setBlocked(blockedData);
+      setActive(activeData);
+      setDoctor(doctorData);
+      setAdmin(adminData);
+      setBlockedAdmin(blockedadminsData);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      setUserRole(user.role ? user.role.toLowerCase().replace(' ', '_') : '');
+      const token = localStorage.getItem('token');
+      if (token && (userRole === 'admin' || userRole === 'super_admin')) {
+        getUsers(token);
+      }
+    }
+  }, [user, userRole]);
+
+  // Base routes available to all roles
+  const baseRoutes = [
     {
       label: 'Dashboard',
       icon: Home,
@@ -33,16 +91,10 @@ export function DashboardSidebar({
       active: pathname === '/analytics'
     },
     {
-      label: 'Users',
-      icon: Users,
-      href: '/users',
-      active: pathname === '/users' || pathname.startsWith('/users/')
-    },
-    {
-      label: 'Doctors',
-      icon: Stethoscope,
-      href: '/doctors',
-      active: pathname === '/doctors'
+      label: 'Profile',
+      icon: User,
+      href: '/profile',
+      active: pathname === '/profile'
     },
     {
       label: 'Settings',
@@ -51,6 +103,70 @@ export function DashboardSidebar({
       active: pathname === '/settings'
     }
   ];
+
+  // Admin-only routes
+  const adminRoutes = [
+    {
+      label: 'Users',
+      icon: Users,
+      href: '/users',
+      active: pathname === '/users' || pathname.startsWith('/users/'),
+      badge: active.length
+    },
+    {
+      label: 'Doctors',
+      icon: Stethoscope,
+      href: '/doctors',
+      active: pathname === '/doctors',
+      badge: doctor.length
+    },
+    {
+      label: 'Registrations',
+      icon: UserPlus,
+      href: '/registrations',
+      active: pathname === '/registrations',
+      badge: pending.length
+    },
+    {
+      label: 'Blocked Users',
+      icon: Ban,
+      href: '/blocked-users',
+      active: pathname === '/blocked-users',
+      badge: blocked.length
+    }
+  ];
+
+  // Super admin-only routes
+  const superAdminRoutes = [
+    {
+      label: 'Admins',
+      icon: ShieldCheck,
+      href: '/admins',
+      active: pathname === '/admins' || pathname.startsWith('/admins/'),
+      badge: admin.length
+    }
+    /*
+    {
+      label: "Blocked Admins",
+      icon: Ban,
+      href: "/blocked-admins",
+      active: pathname === "/blocked-admins",
+      badge: blockedadmins.length,
+    }, */
+  ];
+
+  // Determine which routes to show based on user role
+  let routes = [...baseRoutes];
+  if (userRole === 'admin' || userRole === 'super_admin') {
+    routes = [...routes, ...adminRoutes];
+  }
+  if (userRole === 'super_admin') {
+    routes = [...routes, ...superAdminRoutes];
+  }
+
+  if (!user) {
+    return null; // Don't render sidebar if user isn't loaded yet
+  }
 
   return (
     <div
@@ -67,6 +183,12 @@ export function DashboardSidebar({
           <BarChart3 className='h-6 w-6 text-blue-600' />
           <span>Healthcare Admin</span>
         </Link>
+        {userRole === 'super_admin' && (
+          <Badge className='ml-2 bg-red-600'>Super Admin</Badge>
+        )}
+        {userRole === 'admin' && (
+          <Badge className='ml-2 bg-blue-600'>Admin</Badge>
+        )}
         <Button
           variant='ghost'
           size='icon'
@@ -99,7 +221,10 @@ export function DashboardSidebar({
                   route.active ? 'text-blue-600' : 'text-gray-500'
                 )}
               />
-              {route.label}
+              <span className='flex-1'>{route.label}</span>
+              {route.badge && (
+                <Badge className='bg-blue-600 text-white'>{route.badge}</Badge>
+              )}
             </Link>
           ))}
         </nav>

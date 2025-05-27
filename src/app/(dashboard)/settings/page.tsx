@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,329 +11,294 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { useState, useEffect } from 'react';
+import { UserService } from '@/services/UserService';
+import { useAuth } from '@/services/AuthService';
+import { UserModel } from '@/models/UserModel';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
+  const { user, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
+
+  // Form states
+  const [profileData, setProfileData] = useState<Partial<UserModel>>({
+    fullName: '',
+    email: '',
+    phone: '',
+    address: '',
+    department: '',
+    position: ''
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  // Set initial data when user is loaded
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        department: user.department || '',
+        position: user.position || ''
+      });
+    }
+  }, [user]);
+
+  // Handle profile update
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('error', {
+          description: 'You need to be logged in to update your profile'
+        });
+        return;
+      }
+
+      // Only send non-empty fields
+      const dataToUpdate = Object.entries(profileData).reduce(
+        (acc: any, [key, value]) => {
+          if (value !== undefined && value !== '') {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const updatedUser = await UserService.updateUserProfile(
+        dataToUpdate,
+        token
+      );
+
+      toast.error('error', {
+        description: 'Your profile has been successfully updated'
+      });
+    } catch (error: any) {
+      toast.error('error', {
+        description: error.message || 'Failed to update profile'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle password update
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate passwords match
+    if (passwordData.password !== passwordData.confirmPassword) {
+      toast.error('error', {
+        description: 'New password and confirmation do not match'
+      });
+      return;
+    }
+
+    setIsPasswordSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('error', {
+          description: 'You need to be logged in to update your password'
+        });
+        return;
+      }
+
+      await UserService.updateUserProfile(
+        {
+          currentPassword: passwordData.currentPassword,
+          password: passwordData.password
+        },
+        token
+      );
+
+      // Clear password fields
+      setPasswordData({
+        currentPassword: '',
+        password: '',
+        confirmPassword: ''
+      });
+
+      toast.success('success', {
+        description: 'Your password has been successfully updated'
+      });
+    } catch (error: any) {
+      toast.error('error', {
+        description: error.message || 'Failed to update password'
+      });
+    } finally {
+      setIsPasswordSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-[70vh] items-center justify-center'>
+        <Loader2 className='h-10 w-10 animate-spin text-gray-500' />
+      </div>
+    );
+  }
+
   return (
     <div className='flex flex-col gap-4'>
-      <h1 className='text-2xl font-bold tracking-tight'>Settings</h1>
+      <h1 className='text-2xl font-bold tracking-tight'>Account Settings</h1>
 
-      <Tabs defaultValue='account' className='w-full'>
-        <TabsList className='w-full justify-start'>
-          <TabsTrigger value='account'>Account</TabsTrigger>
-          <TabsTrigger value='appearance'>Appearance</TabsTrigger>
-          <TabsTrigger value='notifications'>Notifications</TabsTrigger>
-          <TabsTrigger value='powerbi'>PowerBI Integration</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value='account' className='mt-4 space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-              <CardDescription>Update your account details</CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                <div className='space-y-2'>
-                  <Label htmlFor='name'>Name</Label>
-                  <Input id='name' defaultValue='John Doe' />
-                </div>
-                <div className='space-y-2'>
-                  <Label htmlFor='email'>Email</Label>
-                  <Input id='email' defaultValue='john.doe@example.com' />
-                </div>
-              </div>
+      <form onSubmit={handleProfileUpdate}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Account Information</CardTitle>
+            <CardDescription>Update your account details</CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               <div className='space-y-2'>
-                <Label htmlFor='bio'>Bio</Label>
+                <Label htmlFor='name'>Name</Label>
                 <Input
-                  id='bio'
-                  defaultValue='Healthcare administrator with 5+ years of experience'
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password</CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='current-password'>Current Password</Label>
-                <Input id='current-password' type='password' />
-              </div>
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                <div className='space-y-2'>
-                  <Label htmlFor='new-password'>New Password</Label>
-                  <Input id='new-password' type='password' />
-                </div>
-                <div className='space-y-2'>
-                  <Label htmlFor='confirm-password'>Confirm Password</Label>
-                  <Input id='confirm-password' type='password' />
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Change Password
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value='appearance' className='mt-4 space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Appearance</CardTitle>
-              <CardDescription>
-                Customize the look and feel of the application
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='theme'>Theme</Label>
-                <Select defaultValue='system'>
-                  <SelectTrigger
-                    id='theme'
-                    className='border-blue-200 focus:ring-blue-500'
-                  >
-                    <SelectValue placeholder='Select theme' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='light'>Light</SelectItem>
-                    <SelectItem value='dark'>Dark</SelectItem>
-                    <SelectItem value='system'>System</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='dense-mode'>Dense Mode</Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Compact UI elements for more content on screen
-                  </p>
-                </div>
-                <Switch id='dense-mode' />
-              </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='animations'>Animations</Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Enable animations and transitions
-                  </p>
-                </div>
-                <Switch id='animations' defaultChecked />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Save Preferences
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value='notifications' className='mt-4 space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
-              <CardDescription>
-                Configure how you receive notifications
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='email-notifications'>
-                    Email Notifications
-                  </Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Receive notifications via email
-                  </p>
-                </div>
-                <Switch id='email-notifications' defaultChecked />
-              </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='browser-notifications'>
-                    Browser Notifications
-                  </Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Receive notifications in your browser
-                  </p>
-                </div>
-                <Switch id='browser-notifications' defaultChecked />
-              </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='appointment-reminders'>
-                    Appointment Reminders
-                  </Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Get reminders about upcoming appointments
-                  </p>
-                </div>
-                <Switch id='appointment-reminders' defaultChecked />
-              </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='system-updates'>System Updates</Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Get notified about system updates and maintenance
-                  </p>
-                </div>
-                <Switch id='system-updates' />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Save Notification Settings
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value='powerbi' className='mt-4 space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>PowerBI Integration</CardTitle>
-              <CardDescription>
-                Configure your PowerBI connection settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='powerbi-workspace'>PowerBI Workspace ID</Label>
-                <Input
-                  id='powerbi-workspace'
-                  placeholder='Enter your PowerBI workspace ID'
-                  className='border-blue-200 focus:ring-blue-500'
+                  id='name'
+                  value={profileData.fullName}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, fullName: e.target.value })
+                  }
                 />
               </div>
               <div className='space-y-2'>
-                <Label htmlFor='powerbi-api-key'>API Key</Label>
+                <Label htmlFor='email'>Email</Label>
                 <Input
-                  id='powerbi-api-key'
+                  id='email'
+                  value={profileData.email}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, email: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <div className='space-y-2'>
+              <Label htmlFor='phone'>Phone Number</Label>
+              <Input
+                id='phone'
+                value={profileData.phone || ''}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, phone: e.target.value })
+                }
+              />
+            </div>
+            <div className='space-y-2'>
+              <Label htmlFor='address'>Address</Label>
+              <Input
+                id='address'
+                value={profileData.address || ''}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, address: e.target.value })
+                }
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button
+              type='submit'
+              className='bg-blue-600 hover:bg-blue-700'
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+
+      <form onSubmit={handlePasswordUpdate}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Password</CardTitle>
+            <CardDescription>Change your password</CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='current-password'>Current Password</Label>
+              <Input
+                id='current-password'
+                type='password'
+                value={passwordData.currentPassword}
+                onChange={(e) =>
+                  setPasswordData({
+                    ...passwordData,
+                    currentPassword: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+              <div className='space-y-2'>
+                <Label htmlFor='new-password'>New Password</Label>
+                <Input
+                  id='new-password'
                   type='password'
-                  placeholder='Enter your PowerBI API key'
-                  className='border-blue-200 focus:ring-blue-500'
+                  value={passwordData.password}
+                  onChange={(e) =>
+                    setPasswordData({
+                      ...passwordData,
+                      password: e.target.value
+                    })
+                  }
+                  required
                 />
               </div>
               <div className='space-y-2'>
-                <Label htmlFor='powerbi-refresh-interval'>
-                  Data Refresh Interval
-                </Label>
-                <Select defaultValue='30'>
-                  <SelectTrigger
-                    id='powerbi-refresh-interval'
-                    className='border-blue-200 focus:ring-blue-500'
-                  >
-                    <SelectValue placeholder='Select refresh interval' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='15'>Every 15 minutes</SelectItem>
-                    <SelectItem value='30'>Every 30 minutes</SelectItem>
-                    <SelectItem value='60'>Every hour</SelectItem>
-                    <SelectItem value='daily'>Once a day</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor='confirm-password'>Confirm Password</Label>
+                <Input
+                  id='confirm-password'
+                  type='password'
+                  value={passwordData.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordData({
+                      ...passwordData,
+                      confirmPassword: e.target.value
+                    })
+                  }
+                  required
+                />
               </div>
-              <Separator />
-              <div className='flex items-center justify-between'>
-                <div className='space-y-0.5'>
-                  <Label htmlFor='powerbi-auto-refresh'>Auto Refresh</Label>
-                  <p className='text-muted-foreground text-sm'>
-                    Automatically refresh PowerBI data
-                  </p>
-                </div>
-                <Switch id='powerbi-auto-refresh' defaultChecked />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Save PowerBI Settings
-              </Button>
-            </CardFooter>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Embedded Reports</CardTitle>
-              <CardDescription>
-                Manage which PowerBI reports are embedded in the dashboard
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className='space-y-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='space-y-0.5'>
-                    <p className='font-medium'>Patient Analytics Dashboard</p>
-                    <p className='text-muted-foreground text-sm'>
-                      Main dashboard for patient statistics
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <Separator />
-                <div className='flex items-center justify-between'>
-                  <div className='space-y-0.5'>
-                    <p className='font-medium'>Financial Reports</p>
-                    <p className='text-muted-foreground text-sm'>
-                      Revenue and expense tracking
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <Separator />
-                <div className='flex items-center justify-between'>
-                  <div className='space-y-0.5'>
-                    <p className='font-medium'>Staff Performance</p>
-                    <p className='text-muted-foreground text-sm'>
-                      Metrics for staff productivity
-                    </p>
-                  </div>
-                  <Switch />
-                </div>
-                <Separator />
-                <div className='flex items-center justify-between'>
-                  <div className='space-y-0.5'>
-                    <p className='font-medium'>Appointment Analytics</p>
-                    <p className='text-muted-foreground text-sm'>
-                      Appointment trends and statistics
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className='bg-blue-600 hover:bg-blue-700'>
-                Update Report Settings
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button
+              type='submit'
+              className='bg-blue-600 hover:bg-blue-700'
+              disabled={isPasswordSubmitting}
+            >
+              {isPasswordSubmitting ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Updating...
+                </>
+              ) : (
+                'Change Password'
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   );
 }

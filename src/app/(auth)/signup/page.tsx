@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2, HeartPulse } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { UserService } from '@/services/UserService'; // Import the UserService
 
 import { Button } from '@/components/ui/button';
 import {
@@ -37,10 +38,11 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  fullName: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z
     .string()
@@ -53,6 +55,10 @@ const formSchema = z.object({
     })
     .regex(/[0-9]/, { message: 'Password must contain at least one number' }),
   role: z.string({ required_error: 'Please select a role' }),
+  phone: z.string().min(10, { message: 'Please enter a valid phone number' }),
+  address: z
+    .string()
+    .min(5, { message: 'Address must be at least 5 characters' }),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions'
   })
@@ -68,10 +74,12 @@ export default function SignupPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      fullName: '',
       email: '',
       password: '',
       role: '',
+      phone: '',
+      address: '',
       terms: false
     }
   });
@@ -96,17 +104,43 @@ export default function SignupPage() {
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
+    // Map role values from the form to the backend expected values
+    const roleMapping: Record<string, string> = {
+      user: 'User',
+      doctor: 'Doctor'
+    };
+
+    // Create registration payload based on form values
+    const registrationData = {
+      fullName: values.fullName,
+      email: values.email,
+      password: values.password,
+      role: roleMapping[values.role] || values.role, // Map the role or use as is
+      phone: values.phone,
+      address: values.address,
+      status: 'Pending', // Default status
+      dateJoined: new Date().toISOString(),
+      lastActive: new Date().toISOString()
+    };
+
+    try {
+      // Call the register method from UserService
+      const result = await UserService.register(registrationData);
       setIsLoading(false);
-      // For demo purposes, we'll just redirect to login
-      // In a real app, you would register the user with your backend
-      router.push('/auth/login');
-    }, 1500);
+
+      // Show success message or redirect to login
+      console.log('Registration successful:', result);
+      router.push('/login');
+    } catch (err: any) {
+      setIsLoading(false);
+      // Display error message
+      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
+    }
   }
 
   const getPasswordStrengthText = () => {
@@ -158,7 +192,7 @@ export default function SignupPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
               <FormField
                 control={form.control}
-                name='name'
+                name='fullName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='text-gray-200'>Full Name</FormLabel>
@@ -210,10 +244,10 @@ export default function SignupPage() {
                       </FormControl>
                       <SelectContent className='border-blue-800/50 bg-blue-900'>
                         <SelectItem
-                          value='administrator'
+                          value='user'
                           className='text-white focus:bg-blue-800 focus:text-white'
                         >
-                          Administrator
+                          User
                         </SelectItem>
                         <SelectItem
                           value='doctor'
@@ -221,20 +255,44 @@ export default function SignupPage() {
                         >
                           Doctor
                         </SelectItem>
-                        <SelectItem
-                          value='nurse'
-                          className='text-white focus:bg-blue-800 focus:text-white'
-                        >
-                          Nurse
-                        </SelectItem>
-                        <SelectItem
-                          value='staff'
-                          className='text-white focus:bg-blue-800 focus:text-white'
-                        >
-                          Staff
-                        </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage className='text-red-300' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='phone'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-gray-200'>
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='+1234567890'
+                        {...field}
+                        className='border-blue-800/50 bg-blue-900/20 text-white placeholder:text-gray-500 focus:border-blue-600'
+                      />
+                    </FormControl>
+                    <FormMessage className='text-red-300' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='address'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-gray-200'>Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='123 Health St, Wellness City'
+                        {...field}
+                        className='border-blue-800/50 bg-blue-900/20 text-white placeholder:text-gray-500 focus:border-blue-600'
+                      />
+                    </FormControl>
                     <FormMessage className='text-red-300' />
                   </FormItem>
                 )}

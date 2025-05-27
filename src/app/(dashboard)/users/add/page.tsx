@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,8 +20,74 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { UserService } from '@/services/UserService';
 
 export default function AddUserPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    phone: '',
+    address: '',
+    role: 'User' // Default role
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleRoleChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Not authorized. Please login again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Use the admin-only addUser endpoint instead of register
+      const result = await UserService.addUser(
+        {
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
+          phone: formData.phone,
+          address: formData.address
+        },
+        token
+      );
+
+      // Redirect to users list on success
+      router.push('/users');
+    } catch (err) {
+      setError(err.message || 'Failed to create user. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2'>
@@ -37,94 +105,89 @@ export default function AddUserPage() {
         <h1 className='text-2xl font-bold tracking-tight'>Add New User</h1>
       </div>
 
+      {error && (
+        <div className='mb-4 rounded-md bg-red-50 p-4 text-red-800'>
+          {error}
+        </div>
+      )}
+
       <Card>
-        <CardHeader>
-          <CardTitle>User Information</CardTitle>
-          <CardDescription>Enter the details for the new user</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>User Information</CardTitle>
+            <CardDescription>
+              Enter the details for the new user
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
             <div className='space-y-2'>
-              <Label htmlFor='first-name'>First Name</Label>
-              <Input id='first-name' placeholder='Enter first name' />
+              <Label htmlFor='fullName'>Full Name</Label>
+              <Input
+                id='fullName'
+                placeholder='Enter full name'
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
             </div>
+
             <div className='space-y-2'>
-              <Label htmlFor='last-name'>Last Name</Label>
-              <Input id='last-name' placeholder='Enter last name' />
+              <Label htmlFor='email'>Email</Label>
+              <Input
+                id='email'
+                type='email'
+                placeholder='Enter email address'
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
-          </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='email'>Email</Label>
-            <Input id='email' type='email' placeholder='Enter email address' />
-          </div>
+            <div className='space-y-2'>
+              <Label htmlFor='password'>Password</Label>
+              <Input
+                id='password'
+                type='password'
+                placeholder='Enter password'
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <div className='space-y-2'>
               <Label htmlFor='phone'>Phone Number</Label>
-              <Input id='phone' placeholder='Enter phone number' />
+              <Input
+                id='phone'
+                placeholder='Enter phone number'
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
-            <div className='space-y-2'>
-              <Label htmlFor='role'>Role</Label>
-              <Select>
-                <SelectTrigger
-                  id='role'
-                  className='border-blue-200 focus:ring-blue-500'
-                >
-                  <SelectValue placeholder='Select role' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='patient'>Patient</SelectItem>
-                  <SelectItem value='staff'>Staff</SelectItem>
-                  <SelectItem value='administrator'>Administrator</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='address'>Address</Label>
-            <Input id='address' placeholder='Enter address' />
-          </div>
-
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
             <div className='space-y-2'>
-              <Label htmlFor='city'>City</Label>
-              <Input id='city' placeholder='Enter city' />
+              <Label htmlFor='address'>Address</Label>
+              <Input
+                id='address'
+                placeholder='Enter full address'
+                value={formData.address}
+                onChange={handleChange}
+              />
             </div>
-            <div className='space-y-2'>
-              <Label htmlFor='state'>State</Label>
-              <Input id='state' placeholder='Enter state' />
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='zip'>Zip Code</Label>
-              <Input id='zip' placeholder='Enter zip code' />
-            </div>
-          </div>
-
-          <div className='space-y-2'>
-            <Label htmlFor='status'>Status</Label>
-            <Select defaultValue='active'>
-              <SelectTrigger
-                id='status'
-                className='border-blue-200 focus:ring-blue-500'
-              >
-                <SelectValue placeholder='Select status' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='active'>Active</SelectItem>
-                <SelectItem value='inactive'>Inactive</SelectItem>
-                <SelectItem value='pending'>Pending</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-        <CardFooter className='flex justify-between'>
-          <Button variant='outline' asChild>
-            <Link href='/users'>Cancel</Link>
-          </Button>
-          <Button className='bg-blue-600 hover:bg-blue-700'>Create User</Button>
-        </CardFooter>
+          </CardContent>
+          <CardFooter className='flex justify-between'>
+            <Button variant='outline' asChild>
+              <Link href='/users'>Cancel</Link>
+            </Button>
+            <Button
+              type='submit'
+              className='bg-blue-600 hover:bg-blue-700'
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating...' : 'Create User'}
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );

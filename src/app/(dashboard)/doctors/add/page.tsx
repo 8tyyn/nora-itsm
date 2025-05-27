@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,9 +20,75 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { UserService } from '@/services/UserService';
+import { DoctorService } from '@/services/DoctorService';
 
 export default function AddDoctorPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    phone: '',
+    address: '',
+    role: 'Doctor' // Default role
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleRoleChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Not authorized. Please login again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Use the admin-only addUser endpoint instead of register
+      const result = await DoctorService.addDoctor(
+        {
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
+          phone: formData.phone,
+          address: formData.address
+        },
+        token
+      );
+
+      // Redirect to users list on success
+      router.push('/doctors');
+    } catch (err) {
+      setError(err.message || 'Failed to create doctor. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2'>
@@ -38,104 +106,89 @@ export default function AddDoctorPage() {
         <h1 className='text-2xl font-bold tracking-tight'>Add New Doctor</h1>
       </div>
 
+      {error && (
+        <div className='mb-4 rounded-md bg-red-50 p-4 text-red-800'>
+          {error}
+        </div>
+      )}
+
       <Card>
-        <CardHeader>
-          <CardTitle>Doctor Information</CardTitle>
-          <CardDescription>
-            Enter the details for the new doctor
-          </CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>Doctor Information</CardTitle>
+            <CardDescription>
+              Enter the details for the new doctor
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
             <div className='space-y-2'>
-              <Label htmlFor='first-name'>First Name</Label>
-              <Input id='first-name' placeholder='Enter first name' />
+              <Label htmlFor='fullName'>Full Name</Label>
+              <Input
+                id='fullName'
+                placeholder='Enter full name'
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
             </div>
+
             <div className='space-y-2'>
-              <Label htmlFor='last-name'>Last Name</Label>
-              <Input id='last-name' placeholder='Enter last name' />
+              <Label htmlFor='email'>Email</Label>
+              <Input
+                id='email'
+                type='email'
+                placeholder='Enter email address'
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
-          </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='email'>Email</Label>
-            <Input id='email' type='email' placeholder='Enter email address' />
-          </div>
+            <div className='space-y-2'>
+              <Label htmlFor='password'>Password</Label>
+              <Input
+                id='password'
+                type='password'
+                placeholder='Enter password'
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <div className='space-y-2'>
               <Label htmlFor='phone'>Phone Number</Label>
-              <Input id='phone' placeholder='Enter phone number' />
+              <Input
+                id='phone'
+                placeholder='Enter phone number'
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
-            <div className='space-y-2'>
-              <Label htmlFor='specialty'>Specialty</Label>
-              <Select>
-                <SelectTrigger
-                  id='specialty'
-                  className='border-blue-200 focus:ring-blue-500'
-                >
-                  <SelectValue placeholder='Select specialty' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='cardiology'>Cardiology</SelectItem>
-                  <SelectItem value='neurology'>Neurology</SelectItem>
-                  <SelectItem value='pediatrics'>Pediatrics</SelectItem>
-                  <SelectItem value='orthopedics'>Orthopedics</SelectItem>
-                  <SelectItem value='dermatology'>Dermatology</SelectItem>
-                  <SelectItem value='general'>General Practice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='qualifications'>Qualifications</Label>
-            <Input
-              id='qualifications'
-              placeholder='Enter qualifications (e.g., MD, PhD)'
-            />
-          </div>
-
-          <div className='space-y-2'>
-            <Label htmlFor='bio'>Biography</Label>
-            <Textarea
-              id='bio'
-              placeholder="Enter doctor's biography and experience"
-              className='min-h-[100px] border-blue-200 focus:ring-blue-500'
-            />
-          </div>
-
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <div className='space-y-2'>
-              <Label htmlFor='status'>Status</Label>
-              <Select defaultValue='available'>
-                <SelectTrigger
-                  id='status'
-                  className='border-blue-200 focus:ring-blue-500'
-                >
-                  <SelectValue placeholder='Select status' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='available'>Available</SelectItem>
-                  <SelectItem value='on-leave'>On Leave</SelectItem>
-                  <SelectItem value='in-appointment'>In Appointment</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor='address'>Address</Label>
+              <Input
+                id='address'
+                placeholder='Enter full address'
+                value={formData.address}
+                onChange={handleChange}
+              />
             </div>
-            <div className='space-y-2'>
-              <Label htmlFor='start-date'>Start Date</Label>
-              <Input id='start-date' type='date' />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className='flex justify-between'>
-          <Button variant='outline' asChild>
-            <Link href='/doctors'>Cancel</Link>
-          </Button>
-          <Button className='bg-blue-600 hover:bg-blue-700'>
-            Create Doctor
-          </Button>
-        </CardFooter>
+          </CardContent>
+          <CardFooter className='flex justify-between'>
+            <Button variant='outline' asChild>
+              <Link href='/doctors'>Cancel</Link>
+            </Button>
+            <Button
+              type='submit'
+              className='bg-blue-600 hover:bg-blue-700'
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating...' : 'Create Doctor'}
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );

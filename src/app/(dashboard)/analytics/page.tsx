@@ -21,7 +21,9 @@ import {
   TrendingUp,
   Users,
   Calendar,
-  DollarSign,
+  Edit,
+  X,
+  Stethoscope,
   Activity
 } from 'lucide-react';
 
@@ -49,185 +51,413 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <Card className='bg-blue-100'>
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+        <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>
-              Total Patients
+              Programmation Created
             </CardTitle>
-            <Users className='h-4 w-4 text-blue-600' />
-          </CardHeader>
-          <CardContent>
-            <div className='flex h-[80px] items-center justify-center'>
-              <p className='text-muted-foreground text-xs'>
-                PowerBI data will be displayed here
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className='bg-blue-100'>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Appointments</CardTitle>
             <Calendar className='h-4 w-4 text-blue-600' />
           </CardHeader>
-          <CardContent>
-            <div className='flex h-[80px] items-center justify-center'>
-              <p className='text-muted-foreground text-xs'>
-                PowerBI data will be displayed here
-              </p>
-            </div>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiOWY4MDI3NWEtNThhOC00YTMxLWI3ZWYtMDk1ZDExYTYxYzk0IiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
           </CardContent>
         </Card>
-        <Card className='bg-blue-100'>
+
+        <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>
-              Average Wait Time
+              Programmation Modified
+            </CardTitle>
+            <Edit className='h-4 w-4 text-blue-600' />
+          </CardHeader>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiYTRhODU3OTctMGY2Yi00OGYwLTg3MzQtYWVjNDExM2QyMzAwIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Programmation Cancelled
+            </CardTitle>
+            <X className='h-4 w-4 text-blue-600' />
+          </CardHeader>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiZTIyNGQ0MjgtY2NjYi00Y2I4LTlkYWYtYjQ4OTJmOTJmN2EyIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Steps Modified
             </CardTitle>
             <Activity className='h-4 w-4 text-blue-600' />
           </CardHeader>
-          <CardContent>
-            <div className='flex h-[80px] items-center justify-center'>
-              <p className='text-muted-foreground text-xs'>
-                PowerBI data will be displayed here
-              </p>
-            </div>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiYmVmNDNhOGUtOGMxNi00MWViLTkwYWQtMmQ2MmU1MjEzYzYwIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
           </CardContent>
         </Card>
-        <Card className='bg-blue-100'>
+
+        <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Revenue</CardTitle>
-            <DollarSign className='h-4 w-4 text-blue-600' />
+            <CardTitle className='text-sm font-medium'>Patient Count</CardTitle>
+            <Users className='h-4 w-4 text-blue-600' />
           </CardHeader>
-          <CardContent>
-            <div className='flex h-[80px] items-center justify-center'>
-              <p className='text-muted-foreground text-xs'>
-                PowerBI data will be displayed here
-              </p>
-            </div>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiMTJlNzMyNGYtY2Y1OC00ZDE4LThlMDctZjVhZTkwOWExNGNmIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Doctors Count</CardTitle>
+            <Stethoscope className='h-4 w-4 text-blue-600' />
+          </CardHeader>
+          <CardContent className='h-[150px] w-[1000px] p-0'>
+            <iframe
+              src='https://app.powerbi.com/view?r=eyJrIjoiMGYyMDA5ZTktYjljZC00NjEwLTg5NmQtZDVlM2EyZmVjZmEyIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+              className='h-full w-full rounded-b-lg'
+              frameBorder='0'
+              allowFullScreen={true}
+              title='Patient Demographics - Age Distribution'
+            />
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue='overview' className='space-y-4'>
+      <Tabs defaultValue='programmation' className='space-y-4'>
         <TabsList className='bg-blue-100'>
-          <TabsTrigger value='overview'>Overview</TabsTrigger>
+          <TabsTrigger value='programmation'>
+            Programmation Analytics
+          </TabsTrigger>
           <TabsTrigger value='patients'>Patient Analytics</TabsTrigger>
-          <TabsTrigger value='appointments'>Appointment Analytics</TabsTrigger>
-          <TabsTrigger value='financial'>Financial Analytics</TabsTrigger>
+          <TabsTrigger value='doctors'>Doctor Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value='overview' className='space-y-4'>
-          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-            <Card className='col-span-2'>
+        <TabsContent value='programmation' className='space-y-4'>
+          {/* First Row */}
+          <div className='grid gap-4 md:grid-cols-2'>
+            <Card>
               <CardHeader>
-                <CardTitle>Patient Trends</CardTitle>
+                <CardTitle>Programmation by Accommodation</CardTitle>
                 <CardDescription>
-                  Monthly patient registrations over time
+                  Total programmation created by accommodation label (Donut
+                  Chart)
                 </CardDescription>
               </CardHeader>
-              <CardContent className='flex h-[300px] items-center justify-center'>
-                <div className='text-center'>
-                  <BarChart3 className='mx-auto mb-2 h-12 w-12 text-blue-600' />
-                  <p className='text-muted-foreground'>
-                    PowerBI chart will be embedded here
-                  </p>
-                </div>
+              <CardContent className='h-[500px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiY2M2YmRhYjYtMzgxMC00ZTg0LWE5OWItZWUzNmM4MGUxYzRjIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Patient Demographics</CardTitle>
-                <CardDescription>Age distribution of patients</CardDescription>
+                <CardTitle>Programmation by Status</CardTitle>
+                <CardDescription>
+                  Total programmation created by status label (Pie Chart)
+                </CardDescription>
               </CardHeader>
-              <CardContent className='flex h-[300px] items-center justify-center'>
-                <div className='text-center'>
-                  <PieChart className='mx-auto mb-2 h-12 w-12 text-blue-600' />
-                  <p className='text-muted-foreground'>
-                    PowerBI chart will be embedded here
-                  </p>
-                </div>
+              <CardContent className='h-[500px] w-[1500px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiZDk0NDUxYzAtMmJlNi00MDQ1LTlhODMtM2ZhOTQ2M2ExYTY0IiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
               </CardContent>
             </Card>
           </div>
 
+          {/* Second Row */}
+          <div className='grid gap-4 md:grid-cols-5'>
+            <Card className='md:col-span-3'>
+              <CardHeader>
+                <CardTitle>Programmation Timeline</CardTitle>
+                <CardDescription>
+                  Total programmation created by Year, Quarter, Month, Day
+                  (Ribbon Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[500px] w-[1300] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiNmFmNjhhNGQtMmMxNi00MDczLWJiZWUtNGYwZTkxOTc5Y2NjIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+
+            <Card className='md:col-span-2'>
+              <CardHeader>
+                <CardTitle>Programmation Summary</CardTitle>
+                <CardDescription>
+                  Created, Modified, Cancelled (Grouped Bar Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[500px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiNjI1NjkwNzMtNjdmMi00MjJhLThiMGItYTU2NDkzZmM1YTk2IiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Third Row */}
+          <div className='grid gap-4 md:grid-cols-2'>
+            <Card>
+              <CardHeader>
+                <CardTitle>Steps & Programmation Modifications</CardTitle>
+                <CardDescription>
+                  Line and Grouped Bar Chart by timeline
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[600px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiOTI1OTIwYzUtNWYzNC00MjY3LWFhY2MtOGFlYjk1OGVmNDg1IiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>100% Stacked Area Chart</CardTitle>
+                <CardDescription>
+                  Steps modified and programmation modified by timeline
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[600px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiYmFhZDk3ZWEtYjk2ZC00OTFlLTllMDUtZjk4NDNmMWE1MDViIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Fourth Row */}
+          <div className='grid gap-4 md:grid-cols-2'>
+            <Card>
+              <CardHeader>
+                <CardTitle>Programmation Funnel</CardTitle>
+                <CardDescription>
+                  Cancelled, Created, Modified (Funnel Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[500px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiYmRjMDNlNjMtNTIxNC00Nzc3LWE4MTMtZjdiMTUzZWJlNjZjIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Programmation Distribution</CardTitle>
+                <CardDescription>
+                  Cancelled, Created, Modified (Pie Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[500px] w-[1300px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiOWJiMDI2MGItYzM2YS00MWUwLTliZmUtNDBiNzFiMDczYmJlIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Department Performance</CardTitle>
+              <CardTitle>Programmation Data Table</CardTitle>
               <CardDescription>
-                Patient satisfaction and efficiency metrics by department
+                Detailed programmation statistics
               </CardDescription>
             </CardHeader>
-            <CardContent className='flex h-[250px] items-center justify-center'>
-              <div className='text-center'>
-                <BarChart3 className='mx-auto mb-2 h-12 w-12 text-blue-600' />
-                <p className='text-muted-foreground'>
-                  PowerBI chart will be embedded here
-                </p>
-              </div>
+            <CardContent className='flex h-[900px] items-center justify-center'>
+              <iframe
+                src='https://app.powerbi.com/view?r=eyJrIjoiODIzYmU5NzctMDJjYy00MDA5LTljMmQtYTU3ODhkYTYyYTFhIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                className='h-full w-full rounded-b-lg'
+                frameBorder='0'
+                allowFullScreen={true}
+                title='Patient Demographics - Age Distribution'
+              />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value='patients' className='space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Analytics</CardTitle>
-              <CardDescription>
-                Detailed patient statistics and trends
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='pl-2'>
-              <div className='flex h-[600px] items-center justify-center rounded-md border bg-slate-50'>
-                <div className='space-y-4 text-center'>
-                  <BarChart3 className='mx-auto h-16 w-16 text-blue-600' />
-                  <p className='text-muted-foreground'>
-                    PowerBI Patient Analytics will be embedded here
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className='grid gap-4 md:grid-cols-3'>
+            <Card className='md:col-span-2'>
+              <CardHeader>
+                <CardTitle>Patient Count by Action</CardTitle>
+                <CardDescription>
+                  Recorded patient count by action name (Stacked Bar Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[650px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiMTBlMDk2N2YtYmUyZi00MzQ0LThlYzUtNmQxNWMwMTBiYjQwIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+
+            <Card className='md:col-span-1'>
+              <CardHeader>
+                <CardTitle>Patient Data Table</CardTitle>
+                <CardDescription>
+                  Detailed patient analytics data
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[650px] w-[1150px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiZDI3YWFkMjQtZmQ1OC00MjZmLWIxYjQtMDVjY2U0NTY0ZmI4IiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
-        <TabsContent value='appointments' className='space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Appointment Analytics</CardTitle>
-              <CardDescription>
-                Appointment trends and statistics
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='pl-2'>
-              <div className='flex h-[600px] items-center justify-center rounded-md border bg-slate-50'>
-                <div className='space-y-4 text-center'>
-                  <LineChart className='mx-auto h-16 w-16 text-blue-600' />
-                  <p className='text-muted-foreground'>
-                    PowerBI Appointment Analytics will be embedded here
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <TabsContent value='doctors' className='space-y-4'>
+          <div className='grid gap-4 md:grid-cols-3'>
+            <Card className='md:col-span-1'>
+              <CardHeader>
+                <CardTitle>Doctor Data Table</CardTitle>
+                <CardDescription>Detailed doctor statistics</CardDescription>
+              </CardHeader>
+              <CardContent className='h-[700px] w-[1400px] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiY2FkYjYxMGYtY2RkNy00ODQyLWE2MWEtOTNlN2E1ZTk3ZTRlIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
 
-        <TabsContent value='financial' className='space-y-4'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Financial Analytics</CardTitle>
-              <CardDescription>Revenue and expense analysis</CardDescription>
-            </CardHeader>
-            <CardContent className='pl-2'>
-              <div className='flex h-[600px] items-center justify-center rounded-md border bg-slate-50'>
-                <div className='space-y-4 text-center'>
-                  <PieChart className='mx-auto h-16 w-16 text-blue-600' />
-                  <p className='text-muted-foreground'>
-                    PowerBI Financial Analytics will be embedded here
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <Card className='md:col-span-2'>
+              <CardHeader>
+                <CardTitle>Doctor Count by Specialty</CardTitle>
+                <CardDescription>
+                  Recorded doctor count by specialty name (Area Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[700px] w-[full] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiMzI0YzNiOTctNzUzZS00NjY5LTk1OTctMWYwOTU4NWVlNDgxIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div className='grid gap-4 md:grid-cols-3'>
+            <Card className='md:col-span-2'>
+              <CardHeader>
+                <CardTitle>Specialty Distribution</CardTitle>
+                <CardDescription>
+                  Doctor count by specialty (Stacked Bar Chart)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[700px] w-[full] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiNDQwYjYyMzAtYjNiMi00MjRmLThkM2QtYmNhNmRlOWM4MTNiIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+
+            <Card className='md:col-span-1'>
+              <CardHeader>
+                <CardTitle>Doctor Analytics Table</CardTitle>
+                <CardDescription>
+                  Comprehensive doctor data table
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='h-[700px] w-[1300] p-0'>
+                <iframe
+                  src='https://app.powerbi.com/view?r=eyJrIjoiMGE4YTZkNTMtNGZmZC00OGY3LTgwNjEtY2U5ZGUzYzliZDJmIiwidCI6ImZkY2M5YWVhLTlmMjItNDI4YS04ZTQ3LWQxNzE3MDRkZGFmZSJ9'
+                  className='h-full w-full rounded-b-lg'
+                  frameBorder='0'
+                  allowFullScreen={true}
+                  title='Patient Demographics - Age Distribution'
+                />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
