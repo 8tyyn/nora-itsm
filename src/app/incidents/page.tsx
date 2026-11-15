@@ -91,7 +91,7 @@ function IncidentsWorkspace() {
       <header className="border-b border-[#dfe5df] bg-white/80 px-5 py-5 md:px-10">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div><p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#718078]">NORA workspace</p><h1 className="mt-1 text-xl font-medium">Incidents</h1></div>
-          <div className="flex items-center gap-4"><span className="hidden text-sm text-[#68756d] sm:block">{user?.name || user?.email}</span><Link href="/chat" className="text-sm text-[#68756d] hover:text-[#183b2b]">Ask NORA</Link></div>
+          <div className="flex items-center gap-4"><span className="hidden text-sm text-[#68756d] sm:block">{user?.name || user?.email}</span><Link href="/chat" className="text-sm text-[#68756d] hover:text-[#183b2b]">Ask NORA</Link><Link href="/profile" className="text-sm text-[#68756d] hover:text-[#183b2b]">Profile</Link>{user?.role === "admin" && <Link href="/admin" className="text-sm text-[#68756d] hover:text-[#183b2b]">Admin</Link>}</div>
         </div>
       </header>
       <div className="mx-auto max-w-7xl px-5 py-8 md:px-10">

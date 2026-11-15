@@ -107,22 +107,22 @@ export function IntegrationsSection() {
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <span className="w-12 h-px bg-foreground/20" />
-          Integrations
+          Your support foundation
           <span className="w-12 h-px bg-foreground/20" />
         </span>
 
         <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
-          Connect
+          Ground
           <br />
-          <span className="text-muted-foreground">your IT knowledge.</span>
+          <span className="text-muted-foreground">every support decision.</span>
         </h2>
 
         <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          Connect ServiceNow, your knowledge base, helpdesk workflows, and the AI APIs that power NORA&apos;s answers.
+          Bring together your internal knowledge, assignment rules, conversations, users, and incident workflows so NORA can guide the next action.
         </p>
       </div>
 

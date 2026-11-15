@@ -6,26 +6,26 @@ const features = [
   {
     number: "01",
     title: "Grounded answers",
-    description: "Ask questions in plain language and get useful answers grounded in approved ServiceNow articles and internal IT knowledge.",
-    stats: { value: "99.7%", label: "task completion" },
+    description: "Ask questions in plain language and get practical answers grounded in approved IT knowledge and internal guidance.",
+    stats: { value: "24/7", label: "support guidance" },
   },
   {
     number: "02",
     title: "Smarter triage",
     description: "Identify the right assignment group, category, and routing path before an incident reaches the wrong team.",
-    stats: { value: "50+", label: "global regions" },
+    stats: { value: "DB", label: "managed routing rules" },
   },
   {
     number: "03",
     title: "Guided troubleshooting",
     description: "Follow clear, contextual troubleshooting steps and know what information to collect before escalating to the helpdesk.",
-    stats: { value: "1000x", label: "parallel execution" },
+    stats: { value: "1", label: "clear next step" },
   },
   {
     number: "04",
     title: "Responsible access",
-    description: "Keep answers tied to trusted sources, with clear boundaries and a traceable foundation for every recommendation.",
-    stats: { value: "0", label: "data breaches" },
+    description: "Keep recommendations tied to trusted sources while preserving a clear path from conversation to incident.",
+    stats: { value: "100%", label: "internal workflow" },
   },
 ];
 

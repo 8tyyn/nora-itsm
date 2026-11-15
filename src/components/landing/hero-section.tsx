@@ -174,7 +174,7 @@ export function HeroSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-white/60">
             <span className="w-8 h-px bg-white/30" />
-            AI-powered guidance for IT service teams
+            AI-powered IT support for your team
           </span>
         </div>
         
@@ -185,9 +185,9 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block whitespace-nowrap">ServiceNow knowledge,</span>
+            <span className="block whitespace-nowrap">IT support, organized.</span>
             <span className="block whitespace-nowrap">
-              answers that{" "}
+              incidents that{" "}
               <span className="relative inline-block">
                 <BlurWord word={words[wordIndex]} trigger={wordIndex} />
               </span>
@@ -206,8 +206,8 @@ export function HeroSection() {
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
             { value: "24/7", label: "IT guidance available" },
-            { value: "RAG", label: "grounded in your KB" },
-            { value: "1", label: "trusted place to ask" },
+            { value: "DB", label: "rules managed by admins" },
+            { value: "1", label: "workspace for every incident" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

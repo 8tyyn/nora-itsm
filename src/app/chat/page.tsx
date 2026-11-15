@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { ArrowUp, Bot, FileText, Menu, Paperclip, Plus, Search, ShieldCheck, Sparkles } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowUp, Bot, CheckCircle2, FileText, Menu, Paperclip, Plus, Search, ShieldCheck, Sparkles, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ProtectedRoute } from "@/components/custom/ProtectedRoute"
 import { useAuth } from "@/services/AuthService"
@@ -16,6 +17,85 @@ const suggestions = [
 
 type Conversation = { id: string; title: string | null; updated_at: string | null }
 type ChatMessage = { id?: string; role: "user" | "assistant"; text: string }
+
+type IncidentDraft = {
+  title: string
+  description: string
+  application_service?: string
+  assignment_group?: string
+  impact?: string
+}
+
+function extractIncidentDraft(text: string): IncidentDraft | null {
+  const fields: Record<string, string> = {}
+  const knownLabels = new Set([
+    "short description",
+    "caller",
+    "selected user",
+    "application / service",
+    "application/service",
+    "issue",
+    "error message",
+    "description",
+    "when the issue started",
+    "start time",
+    "impact",
+    "troubleshooting performed",
+    "resolution status",
+    "recommended assignment group",
+    "notes for the support team",
+    "notes for the assigned team",
+  ])
+  let currentLabel: string | null = null
+
+  for (const line of text.split(/\r?\n/)) {
+    const match = line.match(/^\s*(?:\*\*)?([^:*]+?)(?:\*\*)?\s*:\s*(.*)$/)
+    const label = match?.[1].trim().toLowerCase()
+    if (match && label && knownLabels.has(label)) {
+      currentLabel = label
+      fields[label] = match[2].trim()
+      continue
+    }
+    if (currentLabel && line.trim()) {
+      fields[currentLabel] = fields[currentLabel]
+        ? `${fields[currentLabel]}\n${line.trim()}`
+        : line.trim()
+    }
+  }
+
+  const application = fields["application / service"] || fields["application/service"]
+  const issue = fields.issue
+  const caller = fields.caller || fields["selected user"]
+  const description = fields.description
+  const resolutionStatus = fields["resolution status"]
+  if (!application || !issue || !caller || !description || !resolutionStatus) return null
+
+  const impactText = (fields.impact || "").toLowerCase()
+  const impact = impactText.includes("multiple site") ? "multiple_sites"
+    : impactText.includes("multiple user") ? "multiple_users"
+      : impactText.includes("critical") ? "critical_service"
+        : impactText.includes("site") ? "site"
+          : "single_user"
+
+  return {
+    title: [application, issue, caller]
+      .map((value) => value.replace(/\s+/g, " ").replace(/^\*+|\*+$/g, "").trim())
+      .join(" - "),
+    description: [
+      `Caller: ${caller}`,
+      `Issue: ${issue}`,
+      `Error message: ${fields["error message"] || "Not provided"}`,
+      fields.description,
+      `When the issue started: ${fields["when the issue started"] || fields["start time"] || "Not provided"}`,
+      `Troubleshooting performed: ${fields["troubleshooting performed"] || "Not provided"}`,
+      `Resolution status: ${resolutionStatus}`,
+      `Notes for the support team: ${fields["notes for the assigned team"] || fields["notes for the support team"] || "Not provided"}`,
+    ].join("\n\n"),
+    application_service: application,
+    assignment_group: (fields["recommended assignment group"] || "").replace(/\*/g, "").trim() || undefined,
+    impact,
+  }
+}
 
 function formatInline(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
@@ -103,6 +183,7 @@ export default function ChatPage() {
 
 function ChatWorkspace() {
   const { token, user, logout } = useAuth()
+  const router = useRouter()
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [conversationId, setConversationId] = useState<string | null>(null)
@@ -110,6 +191,7 @@ function ChatWorkspace() {
   const [isSending, setIsSending] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState("")
+  const [creatingIncidentFor, setCreatingIncidentFor] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const initials = (user?.name || user?.email || "N").split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase()
   const apiUrl = process.env.NEXT_PUBLIC_COACH_API_URL ?? ""
@@ -144,6 +226,24 @@ function ChatWorkspace() {
     setError("")
   }
 
+  async function deleteConversation(event: React.MouseEvent, conversation: Conversation) {
+    event.stopPropagation()
+    if (!token || !window.confirm(`Delete "${conversation.title || "this conversation"}"?`)) return
+    setError("")
+    try {
+      const response = await fetch(`${apiUrl}/api/conversations/${conversation.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data?.error || "Unable to delete conversation")
+      setConversations((current) => current.filter((item) => item.id !== conversation.id))
+      if (conversation.id === conversationId) startConversation()
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Unable to delete conversation")
+    }
+  }
+
   async function uploadDocument(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file || !token) return
@@ -160,6 +260,37 @@ function ChatWorkspace() {
     } finally {
       setIsUploading(false)
       event.target.value = ""
+    }
+  }
+
+  async function createIncidentFromReply(draft: IncidentDraft, messageIndex: number) {
+    if (!token || creatingIncidentFor !== null) return
+    setCreatingIncidentFor(messageIndex)
+    setError("")
+    try {
+      const response = await fetch(`${apiUrl}/api/incidents`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: draft.title,
+          description: draft.description,
+          caller_user_id: user?.id,
+          application_service: draft.application_service,
+          assignment_group: draft.assignment_group,
+          impact: draft.impact,
+          urgency: "medium",
+          priority: "medium",
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data?.error || "Unable to create incident")
+      router.push(`/incidents/${data.id}`)
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Unable to create incident")
+      setCreatingIncidentFor(null)
     }
   }
 
@@ -202,14 +333,14 @@ function ChatWorkspace() {
         <Link href="/" className="mb-10 flex items-center gap-2 px-3"><span className="font-display text-2xl tracking-tight">NORA</span><span className="font-mono text-[10px] text-[#738079]">WORKSPACE</span></Link>
         <Button onClick={startConversation} variant="outline" className="mb-7 justify-start gap-2 rounded-xl border-[#cfd9d1] bg-white"><Plus className="h-4 w-4" /> New conversation</Button>
         <p className="mb-3 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#7b8880]">Recent conversations</p>
-        <div className="space-y-1 text-sm">{conversations.length === 0 ? <p className="px-3 py-3 text-xs text-[#87938b]">No conversations yet.</p> : conversations.map((conversation) => <button key={conversation.id} onClick={() => selectConversation(conversation.id)} className={`w-full rounded-xl px-3 py-3 text-left hover:bg-[#f2f5f1] ${conversation.id === conversationId ? "bg-[#edf2ed]" : "text-[#6c7972]"}`}>{conversation.title || "Untitled conversation"}</button>)}</div>
+        <div className="space-y-1 text-sm">{conversations.length === 0 ? <p className="px-3 py-3 text-xs text-[#87938b]">No conversations yet.</p> : conversations.map((conversation) => <div key={conversation.id} className={`group flex items-center gap-1 rounded-xl hover:bg-[#f2f5f1] ${conversation.id === conversationId ? "bg-[#edf2ed]" : ""}`}><button onClick={() => selectConversation(conversation.id)} className={`min-w-0 flex-1 truncate px-3 py-3 text-left ${conversation.id === conversationId ? "text-[#1d2825]" : "text-[#6c7972]"}`}>{conversation.title || "Untitled conversation"}</button><button type="button" onClick={(event) => deleteConversation(event, conversation)} className="mr-2 rounded-md p-2 text-[#9aa59e] opacity-0 transition hover:bg-red-50 hover:text-red-700 group-hover:opacity-100" aria-label={`Delete ${conversation.title || "conversation"}`} title="Delete conversation"><Trash2 className="h-3.5 w-3.5" /></button></div>)}</div>
         <div className="mt-auto rounded-2xl border border-[#dfe5df] bg-[#f7faf7] p-4"><div className="mb-2 flex items-center gap-2 text-sm font-medium"><ShieldCheck className="h-4 w-4 text-[#537c63]" /> NORA is grounded</div><p className="text-xs leading-5 text-[#728078]">Responses are sourced from your approved ServiceNow knowledge base.</p></div>
       </aside>
       <section className="flex min-h-screen flex-col lg:ml-72">
-        <header className="flex h-20 items-center justify-between border-b border-[#dfe5df] bg-white/70 px-5 backdrop-blur md:px-10"><div className="flex items-center gap-3"><button className="lg:hidden"><Menu className="h-5 w-5" /></button><div><p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#718078]">NORA assistant</p><h1 className="text-lg font-medium">IT support workspace</h1></div></div><div className="flex items-center gap-3"><Button variant="ghost" size="icon" aria-label="Search"><Search className="h-4 w-4" /></Button>{user?.role === "admin" && <Link href="/admin" className="hidden text-sm text-[#68756d] hover:text-[#1d2825] sm:block">Admin console</Link>}<Link href="/profile" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#dbe8dc] text-sm font-medium" aria-label="Open profile">{initials}</Link><button onClick={logout} className="hidden text-sm text-[#68756d] hover:text-[#1d2825] sm:block">Disconnect</button></div></header>
+        <header className="flex h-20 items-center justify-between border-b border-[#dfe5df] bg-white/70 px-5 backdrop-blur md:px-10"><div className="flex items-center gap-3"><button className="lg:hidden"><Menu className="h-5 w-5" /></button><div><p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#718078]">NORA assistant</p><h1 className="text-lg font-medium">IT support workspace</h1></div></div><div className="flex items-center gap-4"><Button variant="ghost" size="icon" aria-label="Search"><Search className="h-4 w-4" /></Button><Link href="/incidents" className="hidden text-sm text-[#68756d] hover:text-[#1d2825] sm:block">Incidents</Link>{user?.role === "admin" && <Link href="/admin" className="hidden text-sm text-[#68756d] hover:text-[#1d2825] sm:block">Admin console</Link>}<Link href="/profile" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#dbe8dc] text-sm font-medium" aria-label="Open profile">{initials}</Link><button onClick={logout} className="hidden text-sm text-[#68756d] hover:text-[#1d2825] sm:block">Disconnect</button></div></header>
         <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-5 py-10 md:px-10"><div className="mb-10"><div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#183b2b] text-white shadow-sm"><Sparkles className="h-5 w-5" /></div><h2 className="font-display text-4xl tracking-tight md:text-5xl">How can NORA help?</h2><p className="mt-3 max-w-xl text-[#6f7c74]">Ask about incident routing, troubleshooting steps, required details, or the right ServiceNow knowledge article.</p></div>
           {error && <p className="mb-3 text-sm text-red-700">{error}</p>}
-          {messages.length === 0 ? <div className="grid gap-3 sm:grid-cols-3">{suggestions.map((suggestion) => <button key={suggestion} onClick={() => setMessage(suggestion)} className="rounded-2xl border border-[#d9e2da] bg-white p-4 text-left text-sm leading-5 transition hover:-translate-y-0.5 hover:border-[#91ad98] hover:shadow-sm">{suggestion}<ArrowUp className="mt-6 h-4 w-4 rotate-45 text-[#6b8d75]" /></button>)}</div> : <div className="space-y-6 pb-10">{messages.map((item, index) => <div key={item.id || index} className={`flex gap-3 ${item.role === "user" ? "justify-end" : "justify-start"}`}><div className={`max-w-2xl rounded-2xl px-5 py-4 text-sm leading-6 ${item.role === "user" ? "bg-[#183b2b] text-white" : "border border-[#dce5dd] bg-white"}`}>{item.role === "assistant" && <div className="mb-2 flex items-center gap-2 text-xs font-medium text-[#547660]"><Bot className="h-4 w-4" /> NORA</div>}{item.role === "assistant" ? <StructuredReply text={item.text} /> : item.text}</div></div>)}</div>}
+          {messages.length === 0 ? <div className="grid gap-3 sm:grid-cols-3">{suggestions.map((suggestion) => <button key={suggestion} onClick={() => setMessage(suggestion)} className="rounded-2xl border border-[#d9e2da] bg-white p-4 text-left text-sm leading-5 transition hover:-translate-y-0.5 hover:border-[#91ad98] hover:shadow-sm">{suggestion}<ArrowUp className="mt-6 h-4 w-4 rotate-45 text-[#6b8d75]" /></button>)}</div> : <div className="space-y-6 pb-10">{messages.map((item, index) => { const draft = item.role === "assistant" ? extractIncidentDraft(item.text) : null; return <div key={item.id || index} className={`flex gap-3 ${item.role === "user" ? "justify-end" : "justify-start"}`}><div className={`max-w-2xl rounded-2xl px-5 py-4 text-sm leading-6 ${item.role === "user" ? "bg-[#183b2b] text-white" : "border border-[#dce5dd] bg-white"}`}>{item.role === "assistant" && <div className="mb-2 flex items-center gap-2 text-xs font-medium text-[#547660]"><Bot className="h-4 w-4" /> NORA</div>}{item.role === "assistant" ? <StructuredReply text={item.text} /> : item.text}{draft && <div className="mt-5 border-t border-[#e1e9e2] pt-4"><p className="mb-3 text-xs text-[#68756d]">This response has the required information. Do you want to create a ticket from it?</p><Button onClick={() => createIncidentFromReply(draft, index)} disabled={creatingIncidentFor !== null} className="gap-2 rounded-lg bg-[#183b2b] hover:bg-[#28543e]">{creatingIncidentFor === index ? "Creating ticket..." : <><CheckCircle2 className="h-4 w-4" /> Yes, create ticket</>}</Button></div>}</div></div> })}</div>}
           <div className="mt-auto pt-10"><div className="rounded-2xl border border-[#cfdad0] bg-white p-2 shadow-sm"><textarea value={message} onChange={(event) => setMessage(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) { event.preventDefault(); sendMessage() } }} placeholder="Describe the incident or ask a question..." className="min-h-20 w-full resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-[#98a39c]" aria-label="Message NORA" /><div className="flex items-center justify-between px-2 pb-1"><div className="flex items-center gap-1"><input ref={fileInputRef} type="file" accept=".pdf,.txt,.md,.csv,.json,.log" onChange={uploadDocument} className="hidden" /><Button onClick={() => fileInputRef.current?.click()} variant="ghost" size="sm" disabled={isUploading} className="gap-2 text-[#6e7b73]"><Paperclip className="h-4 w-4" /> {isUploading ? "Uploading..." : "Attach file"}</Button><span className="hidden items-center gap-1 text-xs text-[#9aa59e] sm:flex"><FileText className="h-3 w-3" /> PDF, MD, TXT</span></div>          <Button onClick={sendMessage} disabled={isSending} size="icon" className="h-9 w-9 rounded-xl bg-[#183b2b] hover:bg-[#28543e]" aria-label="Send message"><ArrowUp className="h-4 w-4" /></Button></div></div><p className="mt-3 text-center text-[11px] text-[#8a968e]">NORA can make mistakes. Verify critical decisions against current ServiceNow policies.</p></div>
         </div>
       </section>

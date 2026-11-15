@@ -4,20 +4,20 @@ import { useState, useEffect, useRef } from "react";
 
 const features = [
   { 
-    title: "TypeScript native", 
-    description: "Full type safety for agent configs and responses."
+    title: "Database-backed rules",
+    description: "Administrators can update routing guidance without changing the assistant code."
   },
   { 
-    title: "Streaming results", 
-    description: "Watch your agents think and act in real-time."
+    title: "Structured incidents",
+    description: "Turn a completed chat into a ticket with caller, description, impact, and assignment."
   },
   { 
-    title: "Multi-model support", 
-    description: "OpenAI, Anthropic, Mistral, or bring your own."
+    title: "Knowledge-grounded answers",
+    description: "Use approved internal documents and troubleshooting guidance in every conversation."
   },
   { 
-    title: "Local debugging", 
-    description: "Test agents locally before deploying to cloud."
+    title: "Complete ticket workspace",
+    description: "Update assignment, priority, status, work notes, resolution, and attachments."
   },
 ];
 
@@ -68,12 +68,12 @@ export function DevelopersSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />
-            Developer SDK
+            Built for IT operations
           </span>
           <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
-            Code your agents.
+            Manage your support workflow.
             <br />
-            <span className="text-muted-foreground">Or let them code.</span>
+            <span className="text-muted-foreground">Keep every incident moving.</span>
           </h2>
         </div>
 
@@ -84,8 +84,8 @@ export function DevelopersSection() {
           }`}
         >
           <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A powerful SDK for building, deploying, and orchestrating AI agents. 
-            Define behaviors in code or natural language.
+            A practical foundation for delivering consistent IT support.
+            Connect trusted knowledge, database-managed rules, and a complete incident workflow.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (

@@ -7,19 +7,18 @@ const footerLinks = {
   Product: [
     { name: "Agent capabilities", href: "#features" },
     { name: "How it works", href: "#how-it-works" },
-    { name: "Pricing", href: "#pricing" },
+    { name: "Incident workspace", href: "#features" },
     { name: "Integrations", href: "#integrations" },
   ],
-  Developers: [
-    { name: "Documentation", href: "#developers" },
-    { name: "Agent SDK", href: "#" },
-    { name: "API Reference", href: "#developers" },
-    { name: "Status", href: "#" },
+  Operations: [
+    { name: "How it works", href: "#how-it-works" },
+    { name: "Knowledge foundation", href: "#infra" },
+    { name: "Assignment rules", href: "#features" },
+    { name: "Admin workspace", href: "#developers" },
   ],
   Company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Careers", href: "#", badge: "Hiring" },
+    { name: "About NORA", href: "#" },
+    { name: "Support workflow", href: "#how-it-works" },
     { name: "Contact", href: "#" },
   ],
   Legal: [
@@ -115,12 +114,12 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display text-white">COMPUTE</span>
+                <span className="text-2xl font-display text-white">NORA</span>
                 <span className="text-xs text-white/40 font-mono">TM</span>
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                Autonomous AI agents for distributed computing. Delegate complex tasks to intelligent workers.
+                An internal IT support assistant that connects trusted knowledge, assignment rules, and incident management in one workspace.
               </p>
 
               {/* Social Links */}
@@ -167,13 +166,13 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/30">
-            &copy; 2025 COMPUTE. All rights reserved.
+            &copy; 2025 NORA IT Support. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4 text-sm text-white/30">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#eca8d6]" />
-              All agents operational
+              NORA workspace operational
             </span>
           </div>
         </div>

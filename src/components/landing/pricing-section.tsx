@@ -5,48 +5,48 @@ import { ArrowRight, Check, Zap } from "lucide-react";
 
 const plans = [
   {
-    name: "Explorer",
-    description: "For tinkering and small automations",
+    name: "Team",
+    description: "For everyday IT support",
     price: { monthly: 0, annual: 0 },
     features: [
-      "3 concurrent agents",
-      "1,000 tasks/month",
-      "Community support",
-      "Basic logging",
-      "Public integrations",
+      "NORA chat workspace",
+      "Knowledge-grounded answers",
+      "Incident creation",
+      "Assignment guidance",
+      "Conversation history",
     ],
     cta: "Start free",
     highlight: false,
   },
   {
-    name: "Builder",
-    description: "For teams shipping with agents",
+    name: "Operations",
+    description: "For teams managing incidents",
     price: { monthly: 79, annual: 65 },
     features: [
-      "25 concurrent agents",
-      "50,000 tasks/month",
-      "Priority support",
-      "Full audit trails",
-      "Private integrations",
-      "Team workspaces",
-      "Custom agent roles",
+      "Everything in Team",
+      "Admin-managed assignment rules",
+      "Incident assignment and status",
+      "Work notes and attachments",
+      "Audit history",
+      "Admin dashboard",
+      "Knowledge document management",
     ],
     cta: "Start trial",
     highlight: true,
   },
   {
-    name: "Scale",
-    description: "For agent-first organizations",
+    name: "Enterprise",
+    description: "For larger IT service organizations",
     price: { monthly: null, annual: null },
     features: [
-      "Unlimited agents",
-      "Unlimited tasks",
-      "24/7 dedicated support",
-      "On-premise deployment",
-      "SLA guarantee",
-      "Custom LLM routing",
-      "Advanced security",
-      "Dedicated compute",
+      "Everything in Operations",
+      "Custom support workflows",
+      "Advanced access controls",
+      "Private deployment options",
+      "Service-level support",
+      "Custom integrations",
+      "Dedicated onboarding",
+      "Reporting and governance",
     ],
     cta: "Contact sales",
     highlight: false,
@@ -78,7 +78,7 @@ export function PricingSection() {
           <div className="lg:col-span-7">
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-8">
               <span className="w-12 h-px bg-foreground/30" />
-              Pricing
+              Support plans
             </span>
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"

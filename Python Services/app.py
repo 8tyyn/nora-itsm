@@ -43,8 +43,13 @@ CHAT_CONTEXT_CHAR_LIMIT = min(
 )
 CHAT_HISTORY_MESSAGE_CHAR_LIMIT = int(os.environ.get("CHAT_HISTORY_MESSAGE_CHAR_LIMIT", "4000"))
 CHAT_MAX_OUTPUT_TOKENS = min(
-    int(os.environ.get("CHAT_MAX_OUTPUT_TOKENS", "500")),
-    800,
+    int(os.environ.get("CHAT_MAX_OUTPUT_TOKENS", "1200")),
+    1600,
+)
+CASUAL_GREETING_PATTERN = re.compile(
+    r"^\s*(?:hello|hi|hey|bonjour|salut|bonsoir|good morning|good afternoon|good evening)"
+    r"(?:\s+nora)?[!,.?\s]*$",
+    re.IGNORECASE,
 )
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
 DEFAULT_GROQ_MODEL = os.environ.get("GROQ_DEFAULT_MODEL", "").strip() or "llama-3.1-8b-instant"
@@ -358,6 +363,9 @@ If the issue persists, explain that it requires escalation and provide the relev
 ### Step 4 — Prepare the ServiceNow incident ticket
 
 Once enough information has been collected, generate a structured ticket ready to copy into ServiceNow.
+Always include the **Recommended assignment group** field in the completed ticket response.
+Use the matching active database rule when one applies; otherwise write
+"Pending assignment-group confirmation".
 
 Use the following template:
 
@@ -394,6 +402,10 @@ A concise, specific summary of the issue.
 **Notes for the support team:**
 [Relevant findings, remaining questions, and next recommended actions]
 
+**Recommended assignment group:**
+[The assignment group recommended by the active database assignment rules. If no rule
+matches, write "Pending assignment-group confirmation" instead of omitting this field.]
+
 If some information is missing, do not fabricate it. Mark the field as "Pending confirmation" or "Unknown" and clearly identify what still needs to be collected.
 
 You may prepare a preliminary ticket before all information is available, but clearly identify it as incomplete.
@@ -420,6 +432,8 @@ For a widespread or business-critical incident, recommend prompt escalation acco
 
 - Respond in the same language as the user, usually French or English.
 - Be professional, concise, clear, and practical.
+- Never output internal transcript labels such as "NORA", "USER", or "ASSISTANT" as message prefixes.
+- Never invent profile placeholders such as "<PROFILE>", "[PROFILE]", or "<USER>". Use the caller information provided by the user, or ask for it.
 - Avoid unnecessary technical jargon.
 - Explain technical terms when needed.
 - Ask focused questions instead of sending a long questionnaire in the first response.
@@ -529,6 +543,21 @@ def _load_assignment_rules_prompt() -> str:
     return "\n".join(lines) + "\n"
 
 
+def _is_casual_greeting(message: str) -> bool:
+    return bool(CASUAL_GREETING_PATTERN.fullmatch(message))
+
+
+def _is_malformed_assistant_message(content: str) -> bool:
+    lowered = content.lower()
+    return (
+        "<profile>" in lowered
+        or "[profile]" in lowered
+        or "<user>" in lowered
+        or "hello and welcome" in lowered
+        or "hello\nnora" in lowered
+    )
+
+
 def _load_conversation_for_user(session, conversation_id, user_id):
     return (
         session.query(Conversation)
@@ -559,6 +588,8 @@ def _build_bounded_chat_messages(
 
     for msg in reversed(history):
         if msg.role not in ("user", "assistant") or not msg.content or remaining <= 0:
+            continue
+        if msg.role == "assistant" and _is_malformed_assistant_message(msg.content):
             continue
         content = msg.content[:CHAT_HISTORY_MESSAGE_CHAR_LIMIT]
         message_size = len(content)
@@ -609,13 +640,21 @@ def chat():
         )
 
     rag_context = ""
-    try:
-        retrieved_chunks = rag_service.retrieve(user_message, top_k=2, owner_user_id=str(user_id))
-        rag_context = build_rag_context(retrieved_chunks)
-        if len(rag_context) > 5000:
-            rag_context = rag_context[:5000] + "\n[Additional document context omitted.]"
-    except Exception as exc:
-        print(f"[RAG Warning]: {exc}")
+    is_casual_greeting = _is_casual_greeting(user_message)
+    if not is_casual_greeting:
+        try:
+            retrieved_chunks = rag_service.retrieve(user_message, top_k=2, owner_user_id=str(user_id))
+            rag_context = build_rag_context(retrieved_chunks)
+            if len(rag_context) > 5000:
+                rag_context = rag_context[:5000] + "\n[Additional document context omitted.]"
+        except Exception as exc:
+            print(f"[RAG Warning]: {exc}")
+    else:
+        rag_context = (
+            "\nThis is a casual greeting, not an IT support request. "
+            "Reply briefly and warmly as NORA. Do not ask incident questions "
+            "and do not include knowledge-base content.\n"
+        )
 
     system_content = NORA_SYSTEM_PROMPT + _load_assignment_rules_prompt() + context_info + rag_context
 
@@ -654,12 +693,15 @@ def chat():
         )
 
     try:
-        response = create_chat_completion(
-            messages=messages,
-            temperature=0.7,
-            max_tokens=CHAT_MAX_OUTPUT_TOKENS,
-        )
-        reply = response.choices[0].message.content.strip()
+        if is_casual_greeting:
+            reply = "Hello, I’m NORA, your IT support assistant. How can I help you today?"
+        else:
+            response = create_chat_completion(
+                messages=messages,
+                temperature=0.7,
+                max_tokens=CHAT_MAX_OUTPUT_TOKENS,
+            )
+            reply = response.choices[0].message.content.strip()
 
         with db_session() as session:
             # Reload conversation in this transaction

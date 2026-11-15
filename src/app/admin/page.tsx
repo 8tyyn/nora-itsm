@@ -50,8 +50,6 @@ const emptyOverview: Overview = {
   assignment_group_stats: [],
 }
 
-const assignmentGroups = ["TI.DMI", "TI.ISC.OB", "TI.DEP"]
-
 export default function AdminPage() {
   return <ProtectedRoute adminOnly><AdminWorkspace /></ProtectedRoute>
 }
@@ -83,13 +81,7 @@ function AdminWorkspace() {
       setOverview({
         ...emptyOverview,
         ...overviewData,
-        assignment_group_stats: assignmentGroups.map((group) =>
-          overviewData.assignment_group_stats?.find((stat: AssignmentGroupStat) => stat.group === group) ?? {
-            group,
-            count: 0,
-            applications: [],
-          }
-        ),
+        assignment_group_stats: overviewData.assignment_group_stats ?? [],
       })
     }).catch(() => {
       setUsers([])

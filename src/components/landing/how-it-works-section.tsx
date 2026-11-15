@@ -8,11 +8,10 @@ const steps = [
     title: "Ask",
     subtitle: "your question",
     description: "Describe the incident or IT issue in plain language. NORA understands the context and searches trusted knowledge.",
-    code: `const researcher = new Agent({
-  role: 'Research Analyst',
-  capabilities: ['web', 'docs', 'api'],
-  memory: true,
-  autonomy: 'full'
+    code: `nora.ask({
+  issue: 'VPN cannot connect',
+  context: 'employee report',
+  sources: ['knowledge base', 'rules']
 })`,
   },
   {
@@ -20,24 +19,22 @@ const steps = [
     title: "Understand",
     subtitle: "the context",
     description: "NORA retrieves the most relevant ServiceNow articles, past incidents, and troubleshooting guidance for the situation.",
-    code: `await researcher.execute({
-  task: 'Analyze competitor pricing',
-  sources: ['public-data', 'news'],
-  output: 'structured-report',
-  deadline: '2h'
+    code: `nora.collect({
+  application: 'Cisco VPN',
+  impact: 'single user',
+  troubleshooting: true
 })`,
   },
   {
     number: "03",
     title: "Resolve",
     subtitle: "with confidence",
-    description: "Get recommended next steps, assignment guidance, and the right questions to ask before escalating.",
-    code: `optimus.dashboard({
-  agents: [researcher],
-  metrics: ['tasks', 'latency', 'cost'],
-  alerts: true
-})
-// 847 tasks completed today`,
+    description: "Create a structured incident automatically, assign it to the recommended group, and continue the work in one workspace.",
+    code: `incident.create({
+  assignment_group: 'from active rules',
+  work_notes: true,
+  status: 'open'
+})`,
   },
 ];
 
