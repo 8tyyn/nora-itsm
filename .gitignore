@@ -26,6 +26,26 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local RAG and uploaded files
+Python Services/rag_data/chroma/
+Python Services/rag_data/documents/
+Python Services/rag_data/incident_attachments/
+
+# Local exports and attachments
+$zip
+*.pdf
 
 # vercel
 .vercel
